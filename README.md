@@ -1,5 +1,6 @@
 # N-Player-Lottery-Smart-Contract
 Smart Contract to handle single coin flip, with python code that sets up tournament and executed it.
+Created and **simulated** on a **test** blockchain using `pyethereum`.
 
 Files:
 * `amiller-weakcoin.se` - Smart contract written in Serpent that handles a single, biased coin flip with two players.
