@@ -1,0 +1,66 @@
+data alice:addr
+data bob:addr
+data openings[]:uint256
+data commits[]:uint256
+data left:addr
+data right:addr
+data _initialized
+data T0
+data T1
+data T2
+data bias_n:uint256
+data bias_d:uint256
+extern _: [getWinner:[]:uint256]
+
+macro assert($x):
+    if not $x: invalid()
+
+event Initialize()
+event Commit(player, c:uint256)
+event Open(player:uint256, s:uint256)
+event Winner(x)
+
+def initialize(alice,bob,left,right,T0,T1,T2,bias_n,bias_d):
+    assert(not self._initialized)
+    self._initialized = 1
+    self.alice = alice
+    self.bob = bob
+    self.left = left
+    self.right = right
+    self.T0 = T0
+    self.T1 = T1
+    self.T2 = T2
+    self.bias_n = bias_n
+    self.bias_d = bias_d
+    #log(type=Initialize)
+
+def commit(c:uint256):
+    assert(self.T0 <= block.number < self.T1)
+    if self.alice == 0: self.alice = self.left .getWinner()
+    if self.bob   == 0: self.bob   = self.right.getWinner()
+    self.commits[msg.sender] = c
+    #log(type=Commit, msg.sender, c)
+    
+def open(s:uint256):
+    assert(self.T1 <= block.number < self.T2)
+    assert(sha3([msg.sender, s], items=2) == self.commits[msg.sender])
+    self.openings[msg.sender] = s
+    #log(type=Open, msg.sender, s)
+
+def getWinner():
+    assert(self.T2 <= block.number)
+
+    # Timeout T1
+    if self.commits[self.alice] == 0: return(self.bob:uint256)
+    if self.commits[self.bob  ] == 0: return(self.alice:uint256)
+    
+    # Timeout T2
+    if self.openings[self.alice] == 0: return(self.bob:uint256)
+    if self.openings[self.bob  ] == 0: return(self.alice:uint256)
+
+    # Ordinary case
+    x = (self.openings[self.alice] xor self.openings[self.bob])
+    if mod(x, self.bias_d) < self.bias_n:
+         return(self.alice:uint256)
+    else:
+         return(self.bob:uint256)
