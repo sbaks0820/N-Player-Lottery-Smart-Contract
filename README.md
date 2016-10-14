@@ -8,6 +8,6 @@ Files:
 
 To run the tournament, change the number of players in `tournament-test.py` and run it.
 
-TODO: Will make the trivial change of taking in the number of players as an input soon. 
-TODO: There are likely many ways to make the code shorter, but that's left for another day.
-
+### Things to do: 
+- [ ] Will make the trivial change of taking in the number of players as an input soon. 
+- [ ] There are likely many ways to make the code shorter, but that's left for another day.
